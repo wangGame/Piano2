@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Flip Racing</string>
+    <string name="ads_banner">我是广告，挡住ui请告诉我！旺先生。</string>
+    <!--    <string name="facebook_app_id">1759846634207761</string>-->
+    <color name="ic_launcher_background">#00000000</color>
+    <color name="ic_banner_ads">#444444</color>
+</resources>
