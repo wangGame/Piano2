@@ -49,19 +49,19 @@ public class BaseScreen implements Screen {
 
     }
 
-    private Batch getBatch() {
+    protected Batch getBatch() {
         return game.getBatch();
     }
 
-    private Viewport getStageViewport() {
+    protected Viewport getStageViewport() {
         return game.getStageViewport();
     }
 
-    public void touchDisable(){
+    protected void touchDisable(){
         Gdx.input.setInputProcessor(null);
     }
 
-    public void touchEnable(){
+    protected void touchEnable(){
         Gdx.input.setInputProcessor(stage);
     }
 
@@ -73,7 +73,7 @@ public class BaseScreen implements Screen {
         initView();
     }
 
-    public void initView(){}
+    protected void initView(){}
 
     private void initRootView() {
         ScreenResource annotation = AnnotationInfo.checkClassAnnotation(this, ScreenResource.class);

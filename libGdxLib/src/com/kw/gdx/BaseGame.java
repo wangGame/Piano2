@@ -62,7 +62,7 @@ public class BaseGame extends Game {
     @Override
     public void render() {
 //        ScreenUtils.clearScreen(Constant.viewColor.r, Constant.viewColor.g, Constant.viewColor.b, 1f);
-        Gdx.gl.glClearColor(0.1f,0.4f,0.3f,1);
+        Gdx.gl.glClearColor(0.5f,0.5f,0.5f,1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
         super.render();
 

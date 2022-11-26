@@ -1,7 +1,6 @@
 package com.tony.flipracing;
 
 import android.annotation.SuppressLint;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -9,14 +8,14 @@ import android.view.View;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 
-import kw.mulitplay.game.MulitPlayGame;
+import kw.mulitplay.game.PianoTwo;
 
 public class AndroidLauncher extends AndroidApplication {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initialize(new MulitPlayGame(), new AndroidApplicationConfiguration(){{
+        initialize(new PianoTwo(), new AndroidApplicationConfiguration(){{
             useCompass = false;
             useAccelerometer = false;
             useWakelock = true;
@@ -67,8 +66,6 @@ public class AndroidLauncher extends AndroidApplication {
     @Override
     protected void onPause() {
         super.onPause();
-        NotificationUtil.cancelAll(this);
-        NotificationUtil.add(this);
     }
 
     @Override

@@ -1,11 +1,15 @@
 package kw.mulitplay.game.pianojson;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import kw.mulitplay.game.constant.LevelConfig;
+import kw.mulitplay.game.group.ImageDemo;
 
 public class JsonUtils {
     private String[] pt2Note = {"A-3", "#A-3", "B-3", "C-2", "#C-2", "D-2", "#D-2", "E-2", "F-2", "#F-2", "G-2", "#G-2", "A-2",
@@ -20,8 +24,8 @@ public class JsonUtils {
         readFile();
     }
 
-    private static Array<NoteDataBean> stringToTiles(String str, float bpm) {
-        Array<NoteDataBean> noteDataArray = new Array<>();
+    private static Array<NoteDatas> stringToTiles(String str, float bpm) {
+        Array<NoteDatas> noteDataArray = new Array<>();
         Pattern pattern = Pattern.compile("(\\d+<.+?>|[Q-Y]+|.*?\\[[H-P]*\\]|)[,;]");
         Matcher matcher = pattern.matcher(str);
         Array<String> array = new Array<>();
@@ -39,6 +43,7 @@ public class JsonUtils {
 
             String[] split = tile.split("[,;]");
             for (String s1 : split) {
+                if (s1 == null || s1.equals(""))continue;
                 Pattern pattern1 = Pattern.compile("(?<=\\[).*(?=\\])");
                 Matcher matcher1 = pattern1.matcher(s1);
                 if (matcher1.find()) {
@@ -46,7 +51,7 @@ public class JsonUtils {
                     float len = lenToNum(lenstr.charAt(0)+"", 1);
                     Pattern compile = Pattern.compile(".+(?=\\[)");
                     Matcher matcher2 = compile.matcher(s1);
-                    NoteDataBean bean = new NoteDataBean();
+                    NoteDatas bean = new NoteDatas();
                     noteDataArray.add(bean);
                     bean.setBpm(bpm);
                     bean.setType(type);
@@ -61,7 +66,7 @@ public class JsonUtils {
                         bean.getNodes().add(data);
                     }
                 }else {
-                    NoteDataBean bean = new NoteDataBean();
+                    NoteDatas bean = new NoteDatas();
                     noteDataArray.add(bean);
                     bean.setType(type);
                     bean.setLen(lenToNum(s1, 0));
@@ -122,18 +127,21 @@ public class JsonUtils {
         return num;
     }
 
-    public static JsonDataBean readFile() {
-        JsonDataBean jsonDataBean = new JsonDataBean();
-        Array<Array<NoteDataBean>> arrayArray = new Array<>();
+    public static MusicDataBean readFile() {
+        MusicDataBean musicDataBean = new MusicDataBean();
+        Array<Array<NoteDatas>> arrayArray = new Array<>();
         Json json = new Json();
-        FileHandle exampleJson = new FileHandle("Two Tigers.json");
+        FileHandle exampleJson = LevelConfig.levelHandle;
         String JsonString = exampleJson.readString();
+
         PythonDict jsonRoot = json.fromJson(PythonDict.class, JsonString);
         PythonArray musics = (PythonArray) jsonRoot.get("musics");
         Array<JsonData> jsonDataArray = new Array<>();
         float baseBpm = (float) jsonRoot.get("baseBpm");
-        jsonDataBean.setBaseBpm(baseBpm);
-        jsonDataBean.setArrayArray(arrayArray);
+        musicDataBean.setBaseBpm(baseBpm);
+        musicDataBean.setArrayArray(arrayArray);
+
+
         for (int i = 0; i < musics.size; i++) {
             PythonDict data = (PythonDict) musics.get(i);
             Float id = data.get("id",Float.class);
@@ -162,18 +170,18 @@ public class JsonUtils {
             }
             //music
             Array<String> scores = jsonData.getScores();
-            Array<NoteDataBean> base = stringToTiles(scores.get(0),jsonData.getBpm());
+            Array<NoteDatas> base = stringToTiles(scores.get(0),jsonData.getBpm());
             for (int i = 1; i < scores.size; i++) {
                 float baseDur = 0;
                 int baseIdx = 0;
                 float branchDur = 0;
                 int branchIdx = 0;
                 //将第二个插入
-                Array<NoteDataBean> branch = stringToTiles(scores.get(i), jsonData.getBpm());
+                Array<NoteDatas> branch = stringToTiles(scores.get(i), jsonData.getBpm());
                 while (baseIdx < base.size && branchIdx < branch.size) {
                     if (branchDur < baseDur + base.get(baseIdx).getLen()) {
                         if (branch.get(branchIdx).getNodes().size>0) {
-                            NoteDataBean data = base.get(baseIdx);
+                            NoteDatas data = base.get(baseIdx);
                             data.setBpm(jsonData.getBpm());
                             NoteData data1 = new NoteData();
                             data1.setNodeName(branch.get(branchIdx).getNodes().get(0).getNodeName());
@@ -187,20 +195,20 @@ public class JsonUtils {
                     }
                 }
             }
-            for (NoteDataBean bean : base) {
-                if (bean.getType()!=1){
-                    System.out.println("-------------------");
+            for (NoteDatas bean : base) {
+                if (bean.getType()!=0){
+                    if (bean.getType() == 1){
+                        if (bean.getLen()>1.0f){
+                            bean.setType(6);
+                        }else {
+                            bean.setType(2);
+                        }
+                    }
                 }
                 bean.setLen(bean.getLen()/baseBeats);
-                if (bean.getLen()>1.0f){
-                    bean.setType(6);
-                }else {
-                    bean.setType(2);
-                }
             }
             arrayArray.add(base);
-            System.out.println(base);
         }
-        return jsonDataBean;
+        return musicDataBean;
     }
 }

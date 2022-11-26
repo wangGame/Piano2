@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.tools.texturepacker.TexturePacker;
 
-import kw.mulitplay.game.MulitPlayGame;
+import kw.mulitplay.game.PianoTwo;
 
 public class DesktopLauncher {
     public static void main(String[] arg) {
@@ -17,7 +17,7 @@ public class DesktopLauncher {
         config.height =640;
         config.x = 10;
         config.y = 10;
-        new LwjglApplication(new MulitPlayGame(),config);
+        new LwjglApplication(new PianoTwo(),config);
     }
 
     static String[] atlasFileName = {"main"};

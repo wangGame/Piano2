@@ -12,7 +12,7 @@ android {
             res.srcDirs = ['res']
             assets.srcDirs = ['assets']
             jniLibs.srcDirs = ['libs']
-            assets.srcDirs = ['../Assets/asset']
+            assets.srcDirs = ['../Assets']
         }
     }
 
@@ -34,7 +34,7 @@ android {
     defaultConfig {
         applicationId "com.tony.rider"
         minSdkVersion 9
-        targetSdkVersion 30
+        targetSdkVersion 31
         versionCode 1
         versionName "1.0"
         multiDexEnabled true

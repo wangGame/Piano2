@@ -1,5 +1,7 @@
 package com.kw.gdx.asset;
 
+import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.net.Socket;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.I18NBundle;
 import com.esotericsoftware.spine.SkeletonRenderer;
@@ -195,6 +197,10 @@ public class Asset implements Disposable {
             }
         }
         return assetManager;
+    }
+
+    public void loadSound(String path){
+        assetManager.load(path, Sound.class);
     }
 
     public static Asset getAsset() {

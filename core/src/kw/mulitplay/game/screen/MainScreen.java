@@ -1,46 +1,59 @@
 package kw.mulitplay.game.screen;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.reflect.Field;
+import com.kw.gdx.BaseGame;
 import com.kw.gdx.asset.Asset;
+import com.kw.gdx.constant.Constant;
+import com.kw.gdx.screen.BaseScreen;
+import com.kw.gdx.view.dialog.base.BaseDialog;
 
-import kw.mulitplay.game.constant.Constant;
-import kw.mulitplay.game.screen.base.BaseScreen;
+import kw.mulitplay.game.constant.LevelConfig;
+import kw.mulitplay.game.group.ItemGroup;
 
 public class MainScreen extends BaseScreen {
+    public MainScreen(BaseGame game) {
+        super(game);
+    }
+
     @Override
     protected void initView() {
+        Image image = new Image(Asset.getAsset().getTexture("mainscreen/bg.jpg"));
+        addActor(image);
         Table table = new Table(){{
-            Image testJson = new Image(Asset.getAsset().getTexture("main/3.png"));
-            add(testJson).padLeft(50).padRight(50);
-            testJson.addListener(new ClickListener(){
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    super.clicked(event, x, y);
-                    enterScreen(new TTScreen());
-                }
-            });
-            pack();
-            setPosition(Constant.width/2,Constant.height/2, Align.center);
+            FileHandle song = Gdx.files.internal("song");
+            for (FileHandle handle : song.list()) {
+                add(new ItemGroup(handle, new ItemButtonListener() {
+                    @Override
+                    public void callback() {
+                        setScreen(new GameScreen(game));
+                    }
+                })).padBottom(20);
+                row();
+            }
+            setPosition(Constant.GAMEWIDTH/2,Constant.GAMEHIGHT/2,Align.center);
         }};
-        stage.addActor(table);
-    }
-
-    @Override
-    protected void initListener() {
-
-    }
-
-    @Override
-    protected void initData() {
+        ScrollPane pane = new ScrollPane(table,new ScrollPane.ScrollPaneStyle());
+        addActor(pane);
+        pane.setSize(Constant.GAMEWIDTH,Constant.GAMEHIGHT);
+//        Image bottom = new Image(Asset.getAsset().getTexture("mainscreen/tab_bg.png"));
+//        addActor(bottom);
+//        bottom.setOrigin(Align.center);
+//        bottom.setScale(Constant.GAMEWIDTH/bottom.getWidth());
+//        bottom.setX(Constant.GAMEWIDTH/2,Align.center);
 
     }
 
-    @Override
-    protected void back() {
 
+    @Override
+    protected BaseDialog back() {
+        return super.back();
     }
 }
