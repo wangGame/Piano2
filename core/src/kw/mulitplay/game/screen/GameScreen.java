@@ -1,5 +1,6 @@
 package kw.mulitplay.game.screen;
 
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Array;
 import com.kw.gdx.BaseGame;
 import com.kw.gdx.asset.Asset;
@@ -21,6 +22,17 @@ public class GameScreen extends BaseScreen {
 
     @Override
     public void initView() {
+        Image bg = new Image(Asset.getAsset().getTexture("mainscreen/bg.jpg"));
+        addActor(bg);
+        float v = Constant.GAMEWIDTH / 4;
+//        image.setX(v * integer);
+        for (int i = 1; i <= 3; i++) {
+            Image line = new Image(Asset.getAsset().getTexture("main/white.png"));
+            addActor(line);
+            line.setWidth(2);
+            line.setHeight(Constant.GAMEHIGHT);
+            line.setX(v * i);
+        }
         JsonUtils utils = new JsonUtils();
         MusicDataBean musicDataBean = utils.readFile();
         Array<Array<NoteDatas>> arrayArray = musicDataBean.getArrayArray();
@@ -43,7 +55,6 @@ public class GameScreen extends BaseScreen {
                 }
                 Integer integer = array.get((int) (Math.random() * (array.size-1)));
                 array.removeValue(integer,false);
-                float v = Constant.GAMEWIDTH / 4;
                 image.setX(v * integer);
                 image.setSize(v, noteDatas.getLen()*450);
                 image.setY(baseY);

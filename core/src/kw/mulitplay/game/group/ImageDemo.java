@@ -3,13 +3,19 @@ package kw.mulitplay.game.group;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.kw.gdx.asset.Asset;
 import com.kw.gdx.utils.Assert;
@@ -17,25 +23,48 @@ import com.kw.gdx.utils.Assert;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import kw.mulitplay.game.TimeLine;
 import kw.mulitplay.game.constant.LevelConfig;
 
-public class ImageDemo extends Image {
+public class ImageDemo extends Group {
     private float bpm;
     public boolean userTouchPlay;
     private Array<String> array;
+    private Array<TimeLine> lines = new Array<>();
+    private Image black;
+    private Image image;
+    private boolean touchDown;
+    private float touchDownY;
+    private float touchY;
 
     public ImageDemo(Texture texture){
-        super(texture);
-        setDebug(true);
+        image = new Image(texture);
+        addActor(image);
+        image.setTouchable(Touchable.disabled);
+        black = new Image(texture);
+        black.setSize(3,0);
+        black.setTouchable(Touchable.disabled);
+        black.setColor(Color.BLACK);
+        addActor(black);
         array = new Array<>();
         addListener(new ClickListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 if(userTouchPlay)return false;
                 userTouchPlay = true;
+                touchDown = true;
+                black.setHeight(y);
 //                bf(strName,1);
-                addAction(Actions.fadeOut(0.3f));
+//                addAction(Actions.fadeOut(0.3f));
+                touchDownY = y;
+                touchY = getY(Align.bottom);
                 return super.touchDown(event, x, y, pointer, button);
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                super.touchUp(event, x, y, pointer, button);
+                touchDown = false;
             }
         });
     }
@@ -70,7 +99,7 @@ public class ImageDemo extends Image {
                 char sh = group1.charAt(0);
                 String []zh = str.split(sh+"");
                 int num = zh.length;
-                float ms = 0;
+                float ms = 0.5f;
                 boolean tr = false;
                 switch (sh) {
                     case '~':
@@ -99,14 +128,10 @@ public class ImageDemo extends Image {
                         String s = zh[i];
                         s = s.replace("(","");
                         s = s.replace(")","");
-                        if (Asset.getAsset().assetManager.isLoaded("piano3/"+s+".mp3")) {
-                            addAction(Actions.delay(i / 0.015f,Actions.run(()->{
-//                                Sound o = Asset.getAsset().assetManager.get("piano3/" + s + ".mp3");
-//                                o.play();
-                            })));
-                        }else {
-                            System.out.println("-----------------");
-                        }
+                        TimeLine line = new TimeLine();
+                        line.setName(s);
+                        line.setStartTime(ms * i);
+                        lines.add(line);
                     }
                 }else if(num != 2){
                     System.out.println("error");
@@ -115,14 +140,20 @@ public class ImageDemo extends Image {
                     int flag = 0;
                     for (int i = 0; i < ts; i++) {
                         String s = zh[flag % 2];
-                        if (Asset.getAsset().assetManager.isLoaded("piano3/"+s+".mp3")) {
-                            addAction(Actions.delay(i / 0.015f,Actions.run(()->{
-                                Sound o = Asset.getAsset().assetManager.get("piano3/" + s + ".mp3");
-                                o.play();
-                            })));
-                        }else {
-                            System.out.println("-------------");
-                        }
+                        s = s.replace("(","");
+                        s = s.replace(")","");
+                        TimeLine line = new TimeLine();
+                        line.setName(s);
+                        line.setStartTime(ms * i);
+                        lines.add(line);
+//                        if (Asset.getAsset().assetManager.isLoaded("piano3/"+s+".mp3")) {
+//                            addAction(Actions.delay(i / 0.015f,Actions.run(()->{
+//                                Sound o = Asset.getAsset().assetManager.get("piano3/" + s + ".mp3");
+//                                o.play();
+//                            })));
+//                        }else {
+//                            System.out.println("-------------");
+//                        }
                         flag++;
                     }
                 }
@@ -168,24 +199,58 @@ public class ImageDemo extends Image {
     }
 
 
+    private Array<TimeLine> dispose = new Array<>();
 
     private boolean isPass = false;
     @Override
     public void act(float delta) {
         super.act(delta);
+
+        if (touchDown){
+            float y = getY(Align.bottom);
+            float v = touchY - y + touchDownY;
+            black.setHeight(v);
+        }
+
+
         setY(getY() - LevelConfig.speed);
-        LevelConfig.newSpeed = 60.0f/bpm * 60.0f;
+        LevelConfig.newSpeed = 60.0f/bpm * 30.0f;
         if (getY()<0 && !isPass){
             isPass = true;
             for (String s : array) {
                 bf(s,1);
             }
         }
+
+        for (TimeLine line : lines) {
+            boolean update = line.update(delta);
+            if (update) {
+                dispose.add(line);
+                if (Asset.assetManager.isLoaded("piano3/"+line.getName()+".mp3")){
+                    Sound sound = Asset.assetManager.get("piano3/"+line.getName()+".mp3");
+                    sound.play();
+                }else {
+                    System.out.println("----------------"+line.getName());
+                }
+            }
+        }
+        for (TimeLine line : dispose) {
+            lines.removeValue(line,false);
+        }
+        lines.clear();
     }
+
 
     @Override
     public Actor hit(float x, float y, boolean touchable) {
         return x >= -20 && x < width+20 && y >= -20 && y < height + 20? this : null;
+    }
+
+    @Override
+    public void setSize(float width, float height) {
+        super.setSize(width, height);
+        image.setSize(width,height);
+        black.setSize(width,0);
     }
 
     public void setBpm(float bpm) {
