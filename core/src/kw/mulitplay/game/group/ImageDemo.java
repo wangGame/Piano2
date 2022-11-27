@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -37,14 +38,14 @@ public class ImageDemo extends Group {
     private float touchDownY;
     private float touchY;
 
-    public ImageDemo(Texture texture){
+    public ImageDemo(NinePatch texture){
         image = new Image(texture);
         addActor(image);
         image.setTouchable(Touchable.disabled);
-        black = new Image(texture);
-        black.setSize(3,0);
+        black = new Image(new NinePatch(Asset.getAsset().getTexture("gamescreen/touch_0.png"),
+                0,0,230,10));
         black.setTouchable(Touchable.disabled);
-        black.setColor(Color.BLACK);
+        black.setVisible(false);
         addActor(black);
         array = new Array<>();
         addListener(new ClickListener(){
@@ -54,6 +55,9 @@ public class ImageDemo extends Group {
                 userTouchPlay = true;
                 touchDown = true;
                 black.setHeight(y);
+                for (String s : array) {
+                    bf(s,1);
+                }
 //                bf(strName,1);
 //                addAction(Actions.fadeOut(0.3f));
                 touchDownY = y;
@@ -83,7 +87,6 @@ public class ImageDemo extends Group {
     }
 
     private float bf(String str,int len) {
-        System.out.println(str);
         Pattern pattern = Pattern.compile("(?<=\\().+(?=\\))");
         if (str == null){
             return 0;
@@ -95,11 +98,10 @@ public class ImageDemo extends Group {
             Matcher matcher1 = compile.matcher(group);
             if (matcher1.find()) {
                 String group1 = matcher1.group();
-                System.out.println(group1);
                 char sh = group1.charAt(0);
                 String []zh = str.split(sh+"");
                 int num = zh.length;
-                float ms = 0.5f;
+                float ms = 0.2f;
                 boolean tr = false;
                 switch (sh) {
                     case '~':
@@ -164,17 +166,21 @@ public class ImageDemo extends Group {
                     for (String s : split) {
                         s = s.replace("(","");
                         s = s.replace(")","");
+                        System.out.println(s);
                         if (Asset.assetManager.isLoaded("piano3/"+s+".mp3")) {
                             Sound sound = Asset.getAsset().assetManager.get("piano3/"+s+".mp3");
                             sound.play();
                         }else {
                             System.out.println("not found "+ s);
                         }
+//                        TimeLine line = new TimeLine();
+//                        line.setStartTime();
+//                        lines.add();
                     }
                 }else {
                     str = str.replace("(","");
                     str = str.replace(")","");
-
+                    System.out.println(str);
                     if (Asset.assetManager.isLoaded("piano3/"+str+".mp3")){
                         Sound sound = Asset.assetManager.get("piano3/"+str+".mp3");
                         sound.play();
@@ -186,8 +192,7 @@ public class ImageDemo extends Group {
         }else {
             str = str.replace("(","");
             str = str.replace(")","");
-
-            System.out.println(""+str);
+            System.out.println(str);
             if (Asset.assetManager.isLoaded("piano3/"+str+".mp3")){
                 Sound sound = Asset.assetManager.get("piano3/"+str+".mp3");
                 sound.play();
@@ -207,19 +212,26 @@ public class ImageDemo extends Group {
         super.act(delta);
 
         if (touchDown){
+            black.setVisible(true);
             float y = getY(Align.bottom);
-            float v = touchY - y + touchDownY;
+            float v = touchY - y + touchDownY + 100;
+            if (v<260){
+                v = 260;
+            }
+            if (v>getHeight()){
+                v = getHeight();
+            }
             black.setHeight(v);
         }
 
 
         setY(getY() - LevelConfig.speed);
-        LevelConfig.newSpeed = 60.0f/bpm * 30.0f;
+        LevelConfig.newSpeed = 60.0f/bpm * 50.0f;
         if (getY()<0 && !isPass){
-            isPass = true;
-            for (String s : array) {
-                bf(s,1);
-            }
+//            isPass = true;
+//            for (String s : array) {
+//                bf(s,1);
+//            }
         }
 
         for (TimeLine line : lines) {
@@ -249,8 +261,9 @@ public class ImageDemo extends Group {
     @Override
     public void setSize(float width, float height) {
         super.setSize(width, height);
-        image.setSize(width,height);
-        black.setSize(width,0);
+        image.setHeight(height);
+        black.setHeight(0);
+        black.setX(getWidth()/2,Align.center);
     }
 
     public void setBpm(float bpm) {

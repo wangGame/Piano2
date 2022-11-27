@@ -14,8 +14,8 @@ public class Constant {
     //
     public static double vvv = 2;
 
-    public static float WIDTH = 1080;
-    public static float HIGHT = 1920;
+    public static float WIDTH = 720;
+    public static float HIGHT = 1280;
     public static float GAMEWIDTH = 1080;
     public static float GAMEHIGHT = 1920;
     public static final float STDWIDTH = 1080;

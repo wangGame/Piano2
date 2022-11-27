@@ -2,6 +2,7 @@ package kw.mulitplay.game.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
@@ -16,6 +17,7 @@ import com.kw.gdx.screen.BaseScreen;
 import com.kw.gdx.view.dialog.base.BaseDialog;
 
 import kw.mulitplay.game.constant.LevelConfig;
+import kw.mulitplay.game.group.ImageDemo;
 import kw.mulitplay.game.group.ItemGroup;
 
 public class MainScreen extends BaseScreen {
@@ -43,6 +45,13 @@ public class MainScreen extends BaseScreen {
         ScrollPane pane = new ScrollPane(table,new ScrollPane.ScrollPaneStyle());
         addActor(pane);
         pane.setSize(Constant.GAMEWIDTH,Constant.GAMEHIGHT);
+
+
+        Image image1 = new Image(new NinePatch(
+                Asset.getAsset().getTexture("gamescreen/black_0.png"),
+                0,0,10,230));
+        addActor(image1);
+        image1.setHeight(500);
 //        Image bottom = new Image(Asset.getAsset().getTexture("mainscreen/tab_bg.png"));
 //        addActor(bottom);
 //        bottom.setOrigin(Align.center);

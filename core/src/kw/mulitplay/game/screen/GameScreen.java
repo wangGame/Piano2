@@ -1,5 +1,6 @@
 package kw.mulitplay.game.screen;
 
+import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Array;
 import com.kw.gdx.BaseGame;
@@ -43,7 +44,18 @@ public class GameScreen extends BaseScreen {
         Array<Integer> array = new Array<>();
         for (Array<NoteDatas> noteDataBeans : arrayArray) {
             for (NoteDatas noteDatas : noteDataBeans) {
-                ImageDemo image = new ImageDemo(Asset.getAsset().getTexture("main/white.png"));
+                ImageDemo image = new ImageDemo(
+                        new NinePatch(
+                                Asset.getAsset().getTexture("gamescreen/black_0.png"),
+                                0,0,10,230)
+                        );
+//
+//                if (noteDatas.getLen() == 1.0f){
+//                    image = new ImageDemo(Asset.getAsset().getTexture("main/white.png"));
+//                }else {
+//                    image = new ImageDemo(Asset.getAsset().getTexture("main/white.png"));
+//                }
+
                 stage.addActor(image);
                 if (array.size<=0) {
                     for (int i : arr) {
