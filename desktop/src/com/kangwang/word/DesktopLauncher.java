@@ -13,8 +13,8 @@ public class DesktopLauncher {
 //        texturePack();
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
         config.title = "piano 2";
-        config.width = 360; //485
-        config.height =640;
+        config.width = (int) (360*1.5f); //485
+        config.height = (int) (640*1.5f);
         config.x = 10;
         config.y = 10;
         new LwjglApplication(new PianoTwo(),config);

@@ -29,35 +29,26 @@ public class MainScreen extends BaseScreen {
     protected void initView() {
         Image image = new Image(Asset.getAsset().getTexture("mainscreen/bg.jpg"));
         addActor(image);
+        Image theme = new Image(Asset.getAsset().getTexture("mainscreen/theme.png"));
+        addActor(theme);
+        theme.setPosition(100,Constant.GAMEHIGHT-75,Align.center);
         Table table = new Table(){{
             FileHandle song = Gdx.files.internal("song");
+            int index = 0;
             for (FileHandle handle : song.list()) {
                 add(new ItemGroup(handle, new ItemButtonListener() {
                     @Override
                     public void callback() {
                         setScreen(new GameScreen(game));
                     }
-                })).padBottom(20);
+                },index)).padBottom(20);
                 row();
             }
             setPosition(Constant.GAMEWIDTH/2,Constant.GAMEHIGHT/2,Align.center);
         }};
         ScrollPane pane = new ScrollPane(table,new ScrollPane.ScrollPaneStyle());
         addActor(pane);
-        pane.setSize(Constant.GAMEWIDTH,Constant.GAMEHIGHT);
-
-
-        Image image1 = new Image(new NinePatch(
-                Asset.getAsset().getTexture("gamescreen/black_0.png"),
-                0,0,10,230));
-        addActor(image1);
-        image1.setHeight(500);
-//        Image bottom = new Image(Asset.getAsset().getTexture("mainscreen/tab_bg.png"));
-//        addActor(bottom);
-//        bottom.setOrigin(Align.center);
-//        bottom.setScale(Constant.GAMEWIDTH/bottom.getWidth());
-//        bottom.setX(Constant.GAMEWIDTH/2,Align.center);
-
+        pane.setSize(Constant.GAMEWIDTH,Constant.GAMEHIGHT-150);
     }
 
 

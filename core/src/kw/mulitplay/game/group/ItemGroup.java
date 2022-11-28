@@ -15,16 +15,19 @@ import kw.mulitplay.game.constant.LevelConfig;
 import kw.mulitplay.game.screen.ItemButtonListener;
 
 public class ItemGroup extends Group {
-    public ItemGroup(FileHandle fileName, ItemButtonListener itemButtonListener){
-        Image image = new Image(Asset.getAsset().getTexture("levelitem/color_select_bg.png"));
+    public ItemGroup(FileHandle fileName, ItemButtonListener itemButtonListener,int index){
+        Image image = new Image(Asset.getAsset().getTexture("mainscreen/item_"+(index%4+1)+".png"));
         addActor(image);
         setSize(image.getWidth(),image.getHeight());
+        Image erji = new Image(Asset.getAsset().getTexture("mainscreen/erji.png"));
+        addActor(erji);
+        erji.setPosition(80,getHeight()/2,Align.center);
         Label songLabel = new Label(fileName.name(),new Label.LabelStyle(){{
             font = AssetLoadFile.getBR40();
         }});
         addActor(songLabel);
         songLabel.setColor(Color.BLACK);
-        songLabel.setPosition(20,getHeight()/2, Align.left);
+        songLabel.setPosition(190,getHeight()/2, Align.left);
         addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {

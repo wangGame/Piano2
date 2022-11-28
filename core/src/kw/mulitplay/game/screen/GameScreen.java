@@ -24,12 +24,14 @@ import kw.mulitplay.game.pianojson.NoteDatas;
 public class GameScreen extends BaseScreen {
     private float baseY = 0;
     private Array<Array<NoteDatas>> nodeData;
+    private Array<Integer> step = new Array<>();
     public GameScreen(BaseGame game) {
         super(game);
     }
 
     @Override
     public void initView() {
+        LevelConfig.gameStatus = LevelConfig.idea;
         initBg();
         float v = Constant.GAMEWIDTH / 4;
 //        image.setX(v * integer);
@@ -63,25 +65,32 @@ public class GameScreen extends BaseScreen {
                 array.add(i);
             }
         }
+        int lastIndex = 0;
         Integer integer = array.get((int) (Math.random() * (array.size-1)));
+        lastIndex = integer;
         array.removeValue(integer,false);
         nodeView.addActor(startNode);
         startNode.setY(baseY);
         startNode.setBpm(musicDataBean.getBaseBpm());
         baseY += 450;
+        startNode.setStep(step);
         startNode.setSize(v,450);
+
         for (Array<NoteDatas> noteDataBeans : nodeData) {
+            step.add(noteDataBeans.size);
             for (NoteDatas noteDatas : noteDataBeans) {
                 ImageDemo image = new ImageDemo(
                         new NinePatch(
                                 Asset.getAsset().getTexture("gamescreen/black_0.png"),
                                 0,0,10,230)
                 );
+                image.setStep(step);
                 nodeView.addActor(image);
                 if (array.size<=0) {
                     for (int i : arr) {
                         array.add(i);
                     }
+                    array.removeValue(lastIndex, false);
                 }
                 for (NoteData node : noteDatas.getNodes()) {
                     image.setNodeInfo(node);
@@ -91,6 +100,7 @@ public class GameScreen extends BaseScreen {
                     image.setTouchable(Touchable.disabled);
                 }
                 integer = array.get((int) (Math.random() * (array.size-1)));
+                lastIndex = integer;
                 array.removeValue(integer,false);
                 image.setX(v * integer);
                 image.setSize(v, noteDatas.getLen()*450);
@@ -98,6 +108,10 @@ public class GameScreen extends BaseScreen {
                 image.setBpm(noteDatas.getBpm());
                 baseY += noteDatas.getLen()*450;
             }
+        }
+        if (step.size==0)return;
+        while (step.size<3){
+            step.add(step.get(step.size-1));
         }
     }
 
@@ -113,6 +127,7 @@ public class GameScreen extends BaseScreen {
     //450
 
 
+    float timeScale;
     @Override
     public void render(float delta) {
         super.render(delta);

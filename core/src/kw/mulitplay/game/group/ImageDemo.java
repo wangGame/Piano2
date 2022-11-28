@@ -187,38 +187,12 @@ public class ImageDemo extends Group {
         minusTime+=delta1;
         if (minusTime>=0.01667f) {
             minusTime -= 0.01667f;
-            if (touchDown) {
-
-                black.setVisible(true);
-                float y = getY(Align.bottom);
-                float v = touchY - y + touchDownY + 100;
-                if (v < 260) {
-                    v = 260;
-                }
-                if (v > getHeight()) {
-                    v = getHeight();
-                }
-                black.setHeight(v);
-            }
-
             if (LevelConfig.gameStatus == LevelConfig.running) {
                 setY(getY() - LevelConfig.speed);
-                if (getY() < 0 && !isPass) {
-                    LevelConfig.passNum++;
-                    if (LevelConfig.passNum <15){
-                        timeScale = 1.0f;
-                    }else if (LevelConfig.passNum < 30){
-                        timeScale = 1.2f;
-                    }else if (LevelConfig.passNum < 45){
-                        timeScale = 1.4f;
-                    }else if (LevelConfig.passNum <60){
-                        timeScale = 1.5f;
-                    }else {
-                        timeScale = 1.55f;
-                    }
-                    isPass = true;
-                    touchDown = true;
-                    LevelConfig.newSpeed = 210 * 6 * delta * timeScale;
+                if (getY() < 800 && !isPass) {
+//                    LevelConfig.passNum++;
+//                    isPass = true;
+//                    touchDown = true;
                 }
                 if (
                         lines.size <= 0
@@ -228,6 +202,31 @@ public class ImageDemo extends Group {
                     }
                 }
             }
+            if (touchDown) {
+                if (LevelConfig.passNum <step.get(0)){
+                    timeScale = 1.0f;
+                }else if (LevelConfig.passNum < step.get(1)){
+                    timeScale = 1.2f;
+                }else if (LevelConfig.passNum <step.get(2)){
+                    timeScale = 1.5f;
+                }else {
+                    timeScale = 1.5f;
+                }
+                LevelConfig.newSpeed = 210 * 6 * delta * timeScale;
+
+                black.setVisible(true);
+                float y = getY(Align.bottom);
+                float v = touchY - y + touchDownY + 100;
+                if (v < 260) {
+                    v = 260;
+                }
+                if (v > getHeight()) {
+                    v = getHeight();
+                    touchDown = false;
+                }
+                black.setHeight(v);
+            }
+
             if (isPass) {
                 for (TimeLine line : lines) {
                     boolean update = line.update(delta*timeScale);
@@ -267,5 +266,10 @@ public class ImageDemo extends Group {
 
     public void setBpm(float bpm) {
         this.bpm = bpm;
+    }
+
+    private Array<Integer> step;
+    public void setStep(Array<Integer> step) {
+        this.step = step;
     }
 }
