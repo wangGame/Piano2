@@ -1,20 +1,12 @@
 package kw.mulitplay.game.group;
 
-
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
-import com.badlogic.gdx.input.GestureDetector;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
@@ -26,19 +18,22 @@ import java.util.regex.Pattern;
 
 import kw.mulitplay.game.TimeLine;
 import kw.mulitplay.game.constant.LevelConfig;
+import kw.mulitplay.game.pianojson.NoteData;
 
 public class ImageDemo extends Group {
     private float bpm;
     public boolean userTouchPlay;
-    private Array<String> array;
+    private Array<TimeLine> array;
     private Array<TimeLine> lines = new Array<>();
     private Image black;
     private Image image;
     private boolean touchDown;
     private float touchDownY;
     private float touchY;
+    private StringBuilder builder = new StringBuilder();
 
     public ImageDemo(NinePatch texture){
+        array = new Array<>();
         image = new Image(texture);
         addActor(image);
         image.setTouchable(Touchable.disabled);
@@ -47,7 +42,6 @@ public class ImageDemo extends Group {
         black.setTouchable(Touchable.disabled);
         black.setVisible(false);
         addActor(black);
-        array = new Array<>();
         addListener(new ClickListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -55,13 +49,11 @@ public class ImageDemo extends Group {
                 userTouchPlay = true;
                 touchDown = true;
                 black.setHeight(y);
-                for (String s : array) {
-                    bf(s,1);
-                }
-//                bf(strName,1);
-//                addAction(Actions.fadeOut(0.3f));
+                System.out.println(builder.toString());
+                builder.setLength(0);
                 touchDownY = y;
                 touchY = getY(Align.bottom);
+                isPass = true;
                 return super.touchDown(event, x, y, pointer, button);
             }
 
@@ -73,20 +65,20 @@ public class ImageDemo extends Group {
         });
     }
 
-    public void setSoundName(String str){
-        if (str == null){
+    public void setNodeInfo(NoteData nodeInfo){
+        if (nodeInfo == null){
             System.out.println("---err----");
+            return;
         }
-        array.add(str);
+        TimeLine line = new TimeLine();
+        line.setStartTime(nodeInfo.getStart());
+        line.setName(nodeInfo.getNodeName());
+        array.add(line);
+        bf(nodeInfo.getNodeName(),nodeInfo.getEnd(),nodeInfo.getStart());
     }
 
+    private float bf(String str,float len,float start) {
 
-    public static void main(String[] args) {
-        String str = "(#a1~#d1~#a1)";
-//        bf(str,1);
-    }
-
-    private float bf(String str,int len) {
         Pattern pattern = Pattern.compile("(?<=\\().+(?=\\))");
         if (str == null){
             return 0;
@@ -101,7 +93,7 @@ public class ImageDemo extends Group {
                 char sh = group1.charAt(0);
                 String []zh = str.split(sh+"");
                 int num = zh.length;
-                float ms = 0.2f;
+                float ms = len;
                 boolean tr = false;
                 switch (sh) {
                     case '~':
@@ -132,7 +124,7 @@ public class ImageDemo extends Group {
                         s = s.replace(")","");
                         TimeLine line = new TimeLine();
                         line.setName(s);
-                        line.setStartTime(ms * i);
+                        line.setStartTime(start+ms * i);
                         lines.add(line);
                     }
                 }else if(num != 2){
@@ -148,57 +140,36 @@ public class ImageDemo extends Group {
                         line.setName(s);
                         line.setStartTime(ms * i);
                         lines.add(line);
-//                        if (Asset.getAsset().assetManager.isLoaded("piano3/"+s+".mp3")) {
-//                            addAction(Actions.delay(i / 0.015f,Actions.run(()->{
-//                                Sound o = Asset.getAsset().assetManager.get("piano3/" + s + ".mp3");
-//                                o.play();
-//                            })));
-//                        }else {
-//                            System.out.println("-------------");
-//                        }
                         flag++;
                     }
                 }
             }else {
-                System.out.println("------------22222222222222222---------------------");
                 if (str.contains(".")){
                     String[] split = str.split("\\.");
                     for (String s : split) {
                         s = s.replace("(","");
                         s = s.replace(")","");
-                        System.out.println(s);
-                        if (Asset.assetManager.isLoaded("piano3/"+s+".mp3")) {
-                            Sound sound = Asset.getAsset().assetManager.get("piano3/"+s+".mp3");
-                            sound.play();
-                        }else {
-                            System.out.println("not found "+ s);
-                        }
-//                        TimeLine line = new TimeLine();
-//                        line.setStartTime();
-//                        lines.add();
+                        TimeLine line = new TimeLine();
+                        line.setStartTime(start);
+                        line.setName(s);
+                        lines.add(line);
                     }
                 }else {
                     str = str.replace("(","");
                     str = str.replace(")","");
-                    System.out.println(str);
-                    if (Asset.assetManager.isLoaded("piano3/"+str+".mp3")){
-                        Sound sound = Asset.assetManager.get("piano3/"+str+".mp3");
-                        sound.play();
-                    }else {
-                        System.out.println("----------------");
-                    }
+                    TimeLine line = new TimeLine();
+                    line.setStartTime(start);
+                    line.setName(str);
+                    lines.add(line);
                 }
             }
         }else {
             str = str.replace("(","");
             str = str.replace(")","");
-            System.out.println(str);
-            if (Asset.assetManager.isLoaded("piano3/"+str+".mp3")){
-                Sound sound = Asset.assetManager.get("piano3/"+str+".mp3");
-                sound.play();
-            }else {
-                System.out.println("----------------");
-            }
+            TimeLine line = new TimeLine();
+            line.setName(str);
+            line.setStartTime(start);
+            lines.add(line);
         }
         return 0;
     }
@@ -207,49 +178,77 @@ public class ImageDemo extends Group {
     private Array<TimeLine> dispose = new Array<>();
 
     private boolean isPass = false;
+    private float minusTime;
+    private final float delta = 0.01667f;
+    private float timeScale = 1.0f;
     @Override
-    public void act(float delta) {
-        super.act(delta);
+    public void act(float delta1) {
+        super.act(delta1);
+        minusTime+=delta1;
+        if (minusTime>=0.01667f) {
+            minusTime -= 0.01667f;
+            if (touchDown) {
 
-        if (touchDown){
-            black.setVisible(true);
-            float y = getY(Align.bottom);
-            float v = touchY - y + touchDownY + 100;
-            if (v<260){
-                v = 260;
+                black.setVisible(true);
+                float y = getY(Align.bottom);
+                float v = touchY - y + touchDownY + 100;
+                if (v < 260) {
+                    v = 260;
+                }
+                if (v > getHeight()) {
+                    v = getHeight();
+                }
+                black.setHeight(v);
             }
-            if (v>getHeight()){
-                v = getHeight();
-            }
-            black.setHeight(v);
-        }
 
-
-        setY(getY() - LevelConfig.speed);
-        LevelConfig.newSpeed = 60.0f/bpm * 50.0f;
-        if (getY()<0 && !isPass){
-//            isPass = true;
-//            for (String s : array) {
-//                bf(s,1);
-//            }
-        }
-
-        for (TimeLine line : lines) {
-            boolean update = line.update(delta);
-            if (update) {
-                dispose.add(line);
-                if (Asset.assetManager.isLoaded("piano3/"+line.getName()+".mp3")){
-                    Sound sound = Asset.assetManager.get("piano3/"+line.getName()+".mp3");
-                    sound.play();
-                }else {
-                    System.out.println("----------------"+line.getName());
+            if (LevelConfig.gameStatus == LevelConfig.running) {
+                setY(getY() - LevelConfig.speed);
+                if (getY() < 0 && !isPass) {
+                    LevelConfig.passNum++;
+                    if (LevelConfig.passNum <15){
+                        timeScale = 1.0f;
+                    }else if (LevelConfig.passNum < 30){
+                        timeScale = 1.2f;
+                    }else if (LevelConfig.passNum < 45){
+                        timeScale = 1.4f;
+                    }else if (LevelConfig.passNum <60){
+                        timeScale = 1.5f;
+                    }else {
+                        timeScale = 1.55f;
+                    }
+                    isPass = true;
+                    touchDown = true;
+                    LevelConfig.newSpeed = 210 * 6 * delta * timeScale;
+                }
+                if (
+                        lines.size <= 0
+                ) {
+                    if (getY(Align.top) < 0) {
+                        remove();
+                    }
                 }
             }
+            if (isPass) {
+                for (TimeLine line : lines) {
+                    boolean update = line.update(delta*timeScale);
+                    if (update) {
+                        dispose.add(line);
+                        if (Asset.assetManager.isLoaded("piano3/" + line.getName() + ".mp3")) {
+                            Sound sound = Asset.assetManager.get("piano3/" + line.getName() + ".mp3");
+                            sound.play();
+                        } else {
+                            System.out.println("----------------" + line.getName());
+                        }
+                    }
+                }
+            }
+
+
+            for (TimeLine line : dispose) {
+                lines.removeValue(line, false);
+            }
+            dispose.clear();
         }
-        for (TimeLine line : dispose) {
-            lines.removeValue(line,false);
-        }
-        lines.clear();
     }
 
 

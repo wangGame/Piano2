@@ -1,0 +1,7 @@
+id,name,mid,pieces,order,front_mid,product_id,compare_id,open_music,cover_id,try_type,title_tid
+编号,名字,歌曲mid,解锁碎片数量,优先级,前置解锁歌曲mid,商品id,商品比价id,开始页背景音乐,展示盘面ID,试玩类型,标题多语言
+1,faded,100788,100,2,,fragment_003,,faded_listen,1019,1,faded_invite_cover
+2,despacito,100789,150,4,,fragment_005,fragment_007,despacito_listen,1021,1,Desp_task_tips2
+3,despacito_piano,100790,100,5,,fragment_006,,despacito_piano_listen,1021,1,Desp_invite_cover
+4,alone,100959,100,3,,fragment_008,,alone_listen,1023,1,faded_task_title
+5,spectre,100799,100,1,,fragment_014,,spectre_listen,1026,1,spectre_task_title

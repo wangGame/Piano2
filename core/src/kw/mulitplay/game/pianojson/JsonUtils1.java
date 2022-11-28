@@ -1,5 +1,6 @@
 package kw.mulitplay.game.pianojson;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
@@ -23,6 +24,7 @@ public class JsonUtils1 {
     }
 
     private static Array<NoteDatas> stringToTiles(String str, float bpm) {
+        float timeAll = 0;
         Array<NoteDatas> noteDataArray = new Array<>();
         Array<String> arrayTemp = new Array<>();
         StringBuilder builder = new StringBuilder();
@@ -80,19 +82,23 @@ public class JsonUtils1 {
                         NoteData data = new NoteData();
                         data.setStart(0);
                         data.setEnd(len);
+                        timeAll += bean.getLen();
                         data.setNodeName(notearr);
                         bean.getNodes().add(data);
                     }
                 }else {
                     NoteDatas bean = new NoteDatas();
                     noteDataArray.add(bean);
+                    bean.setBpm(bpm);
                     bean.setType(type);
                     bean.setLen(lenToNum(s1, 0));
+                    timeAll += bean.getLen();
                     bean.setNodes(new Array<>());
 //                    System.out.println("占位");
                 }
             }
         }
+        System.out.println(timeAll +"   -------------------------        timeAll");
         return noteDataArray;
     }
 
@@ -149,7 +155,9 @@ public class JsonUtils1 {
         MusicDataBean musicDataBean = new MusicDataBean();
         Array<Array<NoteDatas>> arrayArray = new Array<>();
         Json json = new Json();
-        FileHandle exampleJson = new FileHandle("Assets/song/111.json");
+//        FileHandle exampleJson = new FileHandle("Assets/song/Little Star.json");
+//        FileHandle exampleJson = Gdx.files.internal("song/Little Star.json");
+        FileHandle exampleJson = LevelConfig.levelHandle;
         String JsonString = exampleJson.readString();
         PythonDict jsonRoot = json.fromJson(PythonDict.class, JsonString);
         PythonArray musics = (PythonArray) jsonRoot.get("musics");

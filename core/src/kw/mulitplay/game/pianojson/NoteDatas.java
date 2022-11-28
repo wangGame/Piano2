@@ -8,6 +8,9 @@ public class NoteDatas {
     private float len;
     private float bpm;
 
+    public NoteDatas(){
+
+    }
     public void setBpm(float bpm) {
         this.bpm = bpm;
     }

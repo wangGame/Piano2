@@ -1,0 +1,13 @@
+Id,type,rewardId,index,num,order,level,weights,pack,image,
+序号,奖品类型,奖品Id,道具位置,奖品数量,后补奖品顺序,可抽取等级,掉落权重,组合道具内容：ID|数量,图片,备注
+1,1,501,1,100067,9,,5,,UIAlbum/cover/icon_album_cover_105.png,魏琮霏专辑二
+2,1,103,2,10,0,,20,,icon_lucky_wheel_diamond.png,钻石
+3,1,102,3,500,0,,190,,icon_lucky_wheel_coin.png,金币
+4,1,105,4,2,10,2,175,,icon_lucky_wheel_faded.png,faded碎片
+5,1,103,5,2,0,,170,,icon_lucky_wheel_diamond.png,钻石
+6,1,301,6,1,0,3,90,"201|1,202|1,203|1",icon_lucky_wheel_package.png,道具包
+7,1,204,7,2,0,2,150,,icon_lucky_wheel_live.png,复活道具
+8,1,103,8,1,0,2,200,,icon_lucky_wheel_diamond.png,钻石
+9,2,701,0,1,0,,5,"204|10,103|10,102|500",img_turntable_012.png,道具大礼包
+10,2,205,0,1,0,,175,,icon_lucky_wheel_unlock.png,挑战钥匙
+11,3,601,0,0,0,,0,103|10,,每日累计奖励
